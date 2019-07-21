@@ -1,87 +1,93 @@
 <template>
   <div class="hello">
     <h1>{{ msg }}</h1>
-    <input type="text" name="username" v-model="username"/> <br>
-    <button @click="getUserData"> Search </button>
+    <input type="text" name="username" v-model="username" />
+    <br />
+    <button @click="getUserData">Search</button>
 
     <div v-if="user !== null" class="profile">
-      <img v-bind:src="user.avatar_url" width="200" height="200"> <br>
-      <label>Username : {{ user.login }}</label> <br>
-      <label>Profile name : {{ user.name }}</label> <br>
-      <label>Profile bio : {{ user.bio }}</label>
+      <img v-bind:src="user.graphql.user.profile_pic_url" width="200" height="200" class="image"/>
+      <br />
+      <label>Username : {{ user.graphql.user.username }}</label>
+      <br />
+      <label>Profile bio : {{ user.graphql.user.biography }}</label>
+      <br />
+      <label>Follower : {{ user.graphql.user.edge_followed_by.count }}</label>
+      <br />
+      <label>Following : {{ user.graphql.user.edge_follow.count }}</label>
     </div>
   </div>
 </template>
 
 <script>
-  import GithubService from '@/services/GithubService'
+import GithubService from "@/services/GithubService";
 
-  export default {
+export default {
+  name: "hello",
+  data() {
+    return {
+      msg: "Instagram Search",
+      username: "",
+      user: null
+    };
+  },
 
-    name: 'hello',
-    data () {
-      return {
-        msg: 'VueJS PWA consuming Github API',
-        username: '',
-        user: null
-      }
-    },
+  methods: {
+    async getUserData() {
+      this.user = null;
 
-    methods: {
-      async getUserData() {
-        this.user = null;
+      const result = await GithubService.searchUser({
+        username: this.username
+      })
+        .then(response => {
+        //   console.log(response.data.graphql.user.username);
 
-        const result = await GithubService.searchUser({
-          username: this.username
-        }).then(response => {
-            console.log(response);
-            
-          this.user = response.data
-        }).catch(error => {
-          console.log(error)
+          this.user = response.data;
         })
+        .catch(error => {
+          console.log(error);
+        });
 
-        if(this.user !== null) {
-          console.log(this.user);
-        }
+      if (this.user !== null) {
+        // console.log(this.user);
       }
     }
   }
+};
 </script>
 
 <style scoped>
-  h1, h2 {
-    font-weight: normal;
-  }
+h1,
+h2 {
+  font-weight: normal;
+}
 
-  input {
-    width: 40%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
+input {
+  width: 40%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
 
+button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
 
-  button {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-  }
+.profile {
+  padding: 16px;
+}
 
-  .profile {
-    padding: 16px;
-  }
-
-  label {
-    font-size: 20px;
-  }
-  
+label {
+  font-size: 20px;
+}
 </style>
