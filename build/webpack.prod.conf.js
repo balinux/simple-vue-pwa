@@ -106,8 +106,10 @@ const webpackConfig = merge(baseWebpackConfig, {
       minify: true,
       stripPrefix: 'dist/',
       runtimeCaching:[{
-        urlPattern : new RegExp('^https://www.instagram.com/'),
-        handler:"networkFirst",
+        urlPattern : new RegExp('^https://www.instagram.com'),
+        // urlPattern : new RegExp('^https://api.github.com'),
+        // handler:"networkFirst",
+        handler:'cacheFirst',
       }]
     })
   ]
